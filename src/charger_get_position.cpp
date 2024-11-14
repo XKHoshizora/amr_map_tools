@@ -1,13 +1,13 @@
 /*********************************************************************
 * Software License Agreement (BSD License)
-* 
+*
 *  Copyright (c) 2017-2020, Waterplus http://www.6-robot.com
 *  All rights reserved.
-* 
+*
 *  Redistribution and use in source and binary forms, with or without
 *  modification, are permitted provided that the following conditions
 *  are met:
-* 
+*
 *   * Redistributions of source code must retain the above copyright
 *     notice, this list of conditions and the following disclaimer.
 *   * Redistributions in binary form must reproduce the above
@@ -17,7 +17,7 @@
 *   * Neither the name of the WaterPlus nor the names of its
 *     contributors may be used to endorse or promote products derived
 *     from this software without specific prior written permission.
-* 
+*
 *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
@@ -36,8 +36,8 @@
 #include <ros/ros.h>
 #include <tf/transform_listener.h>
 #include <visualization_msgs/Marker.h>
-#include <waterplus_map_tools/Waypoint.h>
-#include <waterplus_map_tools/GetChargerByName.h>
+#include <amr_map_tools/Waypoint.h>
+#include <amr_map_tools/GetChargerByName.h>
 #include <string>
 
 int main(int argc, char** argv)
@@ -45,9 +45,9 @@ int main(int argc, char** argv)
     ros::init(argc, argv, "charger_get_position");
 
     ros::NodeHandle nh;
-    ros::ServiceClient cliGetChName = nh.serviceClient<waterplus_map_tools::GetChargerByName>("waterplus/get_charger_name");
-    
-    waterplus_map_tools::GetChargerByName srvN;
+    ros::ServiceClient cliGetChName = nh.serviceClient<amr_map_tools::GetChargerByName>("waterplus/get_charger_name");
+
+    amr_map_tools::GetChargerByName srvN;
     srvN.request.name = "c1";
     if (cliGetChName.call(srvN))
     {

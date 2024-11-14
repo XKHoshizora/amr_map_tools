@@ -1,13 +1,13 @@
 /*********************************************************************
 * Software License Agreement (BSD License)
-* 
+*
 *  Copyright (c) 2017-2020, Waterplus http://www.6-robot.com
 *  All rights reserved.
-* 
+*
 *  Redistribution and use in source and binary forms, with or without
 *  modification, are permitted provided that the following conditions
 *  are met:
-* 
+*
 *   * Redistributions of source code must retain the above copyright
 *     notice, this list of conditions and the following disclaimer.
 *   * Redistributions in binary form must reproduce the above
@@ -17,7 +17,7 @@
 *   * Neither the name of the WaterPlus nor the names of its
 *     contributors may be used to endorse or promote products derived
 *     from this software without specific prior written permission.
-* 
+*
 *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
@@ -41,8 +41,8 @@
 #include <actionlib/client/simple_action_client.h>
 #include <tf/transform_listener.h>
 #include <visualization_msgs/Marker.h>
-#include <waterplus_map_tools/Waypoint.h>
-#include <waterplus_map_tools/GetWaypointByName.h>
+#include <amr_map_tools/Waypoint.h>
+#include <amr_map_tools/GetWaypointByName.h>
 
 static bool bNewCmd = false;
 ros::ServiceClient cliGetWPName;
@@ -54,7 +54,7 @@ typedef actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction> MoveBaseCl
 
 void NaviWaypointCB(const std_msgs::String::ConstPtr &msg)
 {
-    waterplus_map_tools::GetWaypointByName srvN;
+    amr_map_tools::GetWaypointByName srvN;
     srvN.request.name = msg->data;
     if (cliGetWPName.call(srvN))
     {
@@ -78,7 +78,7 @@ int main(int argc, char** argv)
     ros::NodeHandle n;
     ros::Subscriber navi_name_sub = n.subscribe("waterplus/navi_waypoint", 10, NaviWaypointCB);
     result_pub = n.advertise<std_msgs::String>("waterplus/navi_result", 10);
-    cliGetWPName = n.serviceClient<waterplus_map_tools::GetWaypointByName>("waterplus/get_waypoint_name");
+    cliGetWPName = n.serviceClient<amr_map_tools::GetWaypointByName>("waterplus/get_waypoint_name");
 
     MoveBaseClient ac("move_base", true);
     move_base_msgs::MoveBaseGoal goal;
@@ -96,7 +96,7 @@ int main(int argc, char** argv)
                     break;
                 ROS_INFO("Waiting for the move_base action server to come up");
             }
-            
+
             goal.target_pose.header.frame_id = "map";
             goal.target_pose.header.stamp = ros::Time::now();
             goal.target_pose.pose = wp_pose;

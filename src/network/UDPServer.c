@@ -3,6 +3,7 @@
  @abstract   UDP通讯服务
  @author     张万杰
  */
+#include <pthread.h>
 #include "UDPServer.h"
 #include "UDPClient.h"
 
@@ -62,7 +63,7 @@ void UDP_Server_ParseFrame(unsigned char* inBuf,int inLen)
     }
 
     bNewCmd = true;
-   
+
 }
 
 void UDP_Server_Parse(unsigned char inChar)

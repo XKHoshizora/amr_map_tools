@@ -7,20 +7,20 @@
 3. 获取源码:
 ```
 cd ~/catkin_ws/src/
-git clone https://github.com/6-robot/waterplus_map_tools.git
+git clone https://github.com/6-robot/amr_map_tools.git
 ```
 4. 安装依赖项(根据ROS版本选择其中一个):
 ```
-~/catkin_ws/src/waterplus_map_tools/scripts/install_for_indigo.sh
+~/catkin_ws/src/amr_map_tools/scripts/install_for_indigo.sh
 ```
 ```
-~/catkin_ws/src/waterplus_map_tools/scripts/install_for_kinetic.sh
+~/catkin_ws/src/amr_map_tools/scripts/install_for_kinetic.sh
 ```
 ```
-~/catkin_ws/src/waterplus_map_tools/scripts/install_for_melodic.sh
+~/catkin_ws/src/amr_map_tools/scripts/install_for_melodic.sh
 ```
 ```
-~/catkin_ws/src/waterplus_map_tools/scripts/install_for_noetic.sh
+~/catkin_ws/src/amr_map_tools/scripts/install_for_noetic.sh
 ```
 5. 编译
 ```
@@ -37,23 +37,23 @@ MapTools工具是[北京六部工坊科技有限公司](http://www.6-robot.com)�
 ### 1. 打开地图
 启智ROS:
 ```
-roslaunch waterplus_map_tools add_waypoint.launch
+roslaunch amr_map_tools add_waypoint.launch
 ```
 启智AI:
 ```
-roslaunch waterplus_map_tools add_waypoint_ai.launch
+roslaunch amr_map_tools add_waypoint_ai.launch
 ```
 启智MANI:
 ```
-roslaunch waterplus_map_tools add_waypoint_mani.launch
+roslaunch amr_map_tools add_waypoint_mani.launch
 ```
 启程3:
 ```
-roslaunch waterplus_map_tools add_waypoint_wpv3.launch
+roslaunch amr_map_tools add_waypoint_wpv3.launch
 ```
 启明1:
 ```
-roslaunch waterplus_map_tools add_waypoint_wpr1.launch
+roslaunch amr_map_tools add_waypoint_wpr1.launch
 ```
 ![1 pic](./media/map.png)
 
@@ -67,11 +67,11 @@ roslaunch waterplus_map_tools add_waypoint_wpr1.launch
 ### 3. 保存航点
 航点设置完毕后,使用如下指令保存航点:
 ```
-rosrun waterplus_map_tools wp_saver
+rosrun amr_map_tools wp_saver
 ```
 
 ### 4. 航点遍历
 航点设置完毕后,可以使用如下指令让机器人将设置的航点逐个遍历:
 ```
-rosrun waterplus_map_tools wp_nav_test
+rosrun amr_map_tools wp_nav_test
 ```
