@@ -48,7 +48,7 @@ namespace rviz
     AddWaypointTool::AddWaypointTool()
     {
         shortcut_key_ = 'a';
-        topic_property_ = new StringProperty( "Topic", "/waterplus/add_waypoint","The topic on which to add new waypoints.",getPropertyContainer(), SLOT( updateTopic() ), this );
+        topic_property_ = new StringProperty( "Topic", "/waypoint/add_waypoint","The topic on which to add new waypoints.",getPropertyContainer(), SLOT( updateTopic() ), this );
     }
 
     AddWaypointTool::~AddWaypointTool()
@@ -65,7 +65,7 @@ namespace rviz
     void AddWaypointTool::updateTopic()
     {
         pub_ = nh_.advertise<amr_map_tools::Waypoint>( topic_property_->getStdString(), 1);
-        cliGetWPName = nh_.serviceClient<amr_map_tools::GetWaypointByName>("/waterplus/get_waypoint_name");
+        cliGetWPName = nh_.serviceClient<amr_map_tools::GetWaypointByName>("/waypoint/get_waypoint_name");
     }
 
     void AddWaypointTool::onPoseSet(double x, double y, double theta)

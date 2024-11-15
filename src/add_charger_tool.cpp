@@ -48,7 +48,7 @@ namespace rviz
     AddChargerTool::AddChargerTool()
     {
         shortcut_key_ = 'c';
-        topic_property_ = new StringProperty( "Topic", "/waterplus/add_charger","The topic on which to add new charger.",getPropertyContainer(), SLOT( updateTopic() ), this );
+        topic_property_ = new StringProperty( "Topic", "/waypoint/add_charger","The topic on which to add new charger.",getPropertyContainer(), SLOT( updateTopic() ), this );
     }
 
     AddChargerTool::~AddChargerTool()
@@ -65,7 +65,7 @@ namespace rviz
     void AddChargerTool::updateTopic()
     {
         pub_ = nh_.advertise<amr_map_tools::Waypoint>( topic_property_->getStdString(), 1);
-        cliGetChName = nh_.serviceClient<amr_map_tools::GetChargerByName>("/waterplus/get_charger_name");
+        cliGetChName = nh_.serviceClient<amr_map_tools::GetChargerByName>("/waypoint/get_charger_name");
     }
 
     void AddChargerTool::onPoseSet(double x, double y, double theta)

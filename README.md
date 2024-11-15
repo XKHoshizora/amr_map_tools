@@ -1,4 +1,4 @@
-# MapTools工具
+# AMR Map Tools
 
 ## 使用步骤
 
@@ -7,7 +7,7 @@
 3. 获取源码:
 ```
 cd ~/catkin_ws/src/
-git clone https://github.com/6-robot/amr_map_tools.git
+git clone https://github.com/XKHoshizora/amr_map_tools.git
 ```
 4. 安装依赖项(根据ROS版本选择其中一个):
 ```

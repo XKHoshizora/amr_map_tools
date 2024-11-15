@@ -45,7 +45,7 @@ int main(int argc, char** argv)
     ros::init(argc, argv, "charger_get_position");
 
     ros::NodeHandle nh;
-    ros::ServiceClient cliGetChName = nh.serviceClient<amr_map_tools::GetChargerByName>("waterplus/get_charger_name");
+    ros::ServiceClient cliGetChName = nh.serviceClient<amr_map_tools::GetChargerByName>("waypoint/get_charger_name");
 
     amr_map_tools::GetChargerByName srvN;
     srvN.request.name = "c1";

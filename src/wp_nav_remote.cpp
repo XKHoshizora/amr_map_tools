@@ -74,9 +74,9 @@ int main(int argc, char** argv)
     InitUDPServer(20181); //本地监听端口
 
     ros::NodeHandle nh;
-    ros::ServiceClient cliGetNum = nh.serviceClient<amr_map_tools::GetNumOfWaypoints>("waterplus/get_num_waypoint");
-    ros::ServiceClient cliGetWPIndex = nh.serviceClient<amr_map_tools::GetWaypointByIndex>("waterplus/get_waypoint_index");
-    ros::ServiceClient cliGetWPName = nh.serviceClient<amr_map_tools::GetWaypointByName>("waterplus/get_waypoint_name");
+    ros::ServiceClient cliGetNum = nh.serviceClient<amr_map_tools::GetNumOfWaypoints>("waypoint/get_num_waypoint");
+    ros::ServiceClient cliGetWPIndex = nh.serviceClient<amr_map_tools::GetWaypointByIndex>("waypoint/get_waypoint_index");
+    ros::ServiceClient cliGetWPName = nh.serviceClient<amr_map_tools::GetWaypointByName>("waypoint/get_waypoint_name");
     behaviors_pub = nh.advertise<std_msgs::String>("wpr1/behaviors", 30);
     ros::Subscriber res_grab = nh.subscribe("wpr1/grab_result", 30, GrabResultCB);
     ros::Subscriber res_pass = nh.subscribe("wpr1/pass_result", 30, PassResultCB);
