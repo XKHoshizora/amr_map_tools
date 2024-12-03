@@ -41,8 +41,8 @@
 #include <actionlib/client/simple_action_client.h>
 #include <tf/transform_listener.h>
 #include <visualization_msgs/Marker.h>
-#include <amr_map_tools/Waypoint.h>
-#include <amr_map_tools/GetWaypointByName.h>
+#include <amr_waypoint_tools/Waypoint.h>
+#include <amr_waypoint_tools/GetWaypointByName.h>
 
 static bool bNewCmd = false;
 ros::ServiceClient cliGetWPName;
@@ -54,7 +54,7 @@ typedef actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction> MoveBaseCl
 
 void NaviWaypointCB(const std_msgs::String::ConstPtr &msg)
 {
-    amr_map_tools::GetWaypointByName srvN;
+    amr_waypoint_tools::GetWaypointByName srvN;
     srvN.request.name = msg->data;
     if (cliGetWPName.call(srvN))
     {
@@ -78,7 +78,7 @@ int main(int argc, char** argv)
     ros::NodeHandle n;
     ros::Subscriber navi_name_sub = n.subscribe("waypoint/navi_waypoint", 10, NaviWaypointCB);
     result_pub = n.advertise<std_msgs::String>("waypoint/navi_result", 10);
-    cliGetWPName = n.serviceClient<amr_map_tools::GetWaypointByName>("waypoint/get_waypoint_name");
+    cliGetWPName = n.serviceClient<amr_waypoint_tools::GetWaypointByName>("waypoint/get_waypoint_name");
 
     MoveBaseClient ac("move_base", true);
     move_base_msgs::MoveBaseGoal goal;

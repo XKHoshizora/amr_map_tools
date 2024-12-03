@@ -36,8 +36,8 @@
 #include <ros/ros.h>
 #include <tf/transform_listener.h>
 #include <visualization_msgs/Marker.h>
-#include <amr_map_tools/Waypoint.h>
-#include <amr_map_tools/GetChargerByName.h>
+#include <amr_waypoint_tools/Waypoint.h>
+#include <amr_waypoint_tools/GetChargerByName.h>
 #include <string>
 
 int main(int argc, char** argv)
@@ -45,9 +45,9 @@ int main(int argc, char** argv)
     ros::init(argc, argv, "charger_get_position");
 
     ros::NodeHandle nh;
-    ros::ServiceClient cliGetChName = nh.serviceClient<amr_map_tools::GetChargerByName>("waypoint/get_charger_name");
+    ros::ServiceClient cliGetChName = nh.serviceClient<amr_waypoint_tools::GetChargerByName>("waypoint/get_charger_name");
 
-    amr_map_tools::GetChargerByName srvN;
+    amr_waypoint_tools::GetChargerByName srvN;
     srvN.request.name = "c1";
     if (cliGetChName.call(srvN))
     {

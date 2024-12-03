@@ -41,8 +41,8 @@
 #include <actionlib/client/simple_action_client.h>
 #include <tf/transform_listener.h>
 #include <visualization_msgs/Marker.h>
-#include <amr_map_tools/Waypoint.h>
-#include <amr_map_tools/GetWaypointByName.h>
+#include <amr_waypoint_tools/Waypoint.h>
+#include <amr_waypoint_tools/GetWaypointByName.h>
 
 static bool bNewCmd = false;
 static geometry_msgs::Pose goal_pose;

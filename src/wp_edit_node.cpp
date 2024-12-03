@@ -37,11 +37,11 @@
 #include <ros/ros.h>
 #include <tf/transform_listener.h>
 #include <visualization_msgs/Marker.h>
-#include <amr_map_tools/Waypoint.h>
-#include <amr_map_tools/GetNumOfWaypoints.h>
-#include <amr_map_tools/GetWaypointByIndex.h>
-#include <amr_map_tools/GetWaypointByName.h>
-#include <amr_map_tools/SaveWaypoints.h>
+#include <amr_waypoint_tools/Waypoint.h>
+#include <amr_waypoint_tools/GetNumOfWaypoints.h>
+#include <amr_waypoint_tools/GetWaypointByIndex.h>
+#include <amr_waypoint_tools/GetWaypointByName.h>
+#include <amr_waypoint_tools/SaveWaypoints.h>
 #include <interactive_markers/interactive_marker_server.h>
 #include <interactive_markers/menu_handler.h>
 #include <string>
@@ -50,8 +50,8 @@ using namespace visualization_msgs;
 using namespace interactive_markers;
 using namespace std;
 
-static std::vector <amr_map_tools::Waypoint> arWaypoint;
-static std::vector <amr_map_tools::Waypoint> arCharger;
+static std::vector <amr_waypoint_tools::Waypoint> arWaypoint;
+static std::vector <amr_waypoint_tools::Waypoint> arCharger;
 static ros::Publisher marker_pub;
 static visualization_msgs::Marker text_marker;
 static InteractiveMarkerServer* pWaypointServer = NULL;
@@ -63,14 +63,14 @@ std::string strDelWaypointName;
 bool bDeleteCharger = false;
 std::string strDelChargerName;
 
-bool getNumOfWaypoints(amr_map_tools::GetNumOfWaypoints::Request &req, amr_map_tools::GetNumOfWaypoints::Response &res)
+bool getNumOfWaypoints(amr_waypoint_tools::GetNumOfWaypoints::Request &req, amr_waypoint_tools::GetNumOfWaypoints::Response &res)
 {
     res.num = arWaypoint.size();
     ROS_INFO("Get_num_wp: num_wp = %d", res.num);
     return true;
 }
 
-bool getWaypointByIndex(amr_map_tools::GetWaypointByIndex::Request &req, amr_map_tools::GetWaypointByIndex::Response &res)
+bool getWaypointByIndex(amr_waypoint_tools::GetWaypointByIndex::Request &req, amr_waypoint_tools::GetWaypointByIndex::Response &res)
 {
     int nIndex = req.index;
     int nNumWP = arWaypoint.size();
@@ -88,7 +88,7 @@ bool getWaypointByIndex(amr_map_tools::GetWaypointByIndex::Request &req, amr_map
     }
 }
 
-bool getWaypointByName(amr_map_tools::GetWaypointByName::Request &req, amr_map_tools::GetWaypointByName::Response &res)
+bool getWaypointByName(amr_waypoint_tools::GetWaypointByName::Request &req, amr_waypoint_tools::GetWaypointByName::Response &res)
 {
     std::string reqName = req.name;
     int nNumWP = arWaypoint.size();
@@ -116,7 +116,7 @@ bool getWaypointByName(amr_map_tools::GetWaypointByName::Request &req, amr_map_t
     }
 }
 
-bool getChargerByName(amr_map_tools::GetWaypointByName::Request &req, amr_map_tools::GetWaypointByName::Response &res)
+bool getChargerByName(amr_waypoint_tools::GetWaypointByName::Request &req, amr_waypoint_tools::GetWaypointByName::Response &res)
 {
     std::string reqName = req.name;
     int nNumCh = arCharger.size();
@@ -145,7 +145,7 @@ bool getChargerByName(amr_map_tools::GetWaypointByName::Request &req, amr_map_to
 }
 
 bool SaveWaypointsToFile(std::string inFilename);
-bool saveWaypoints(amr_map_tools::SaveWaypoints::Request &req, amr_map_tools::SaveWaypoints::Response &res)
+bool saveWaypoints(amr_waypoint_tools::SaveWaypoints::Request &req, amr_waypoint_tools::SaveWaypoints::Response &res)
 {
     return SaveWaypointsToFile(req.filename);
 }
@@ -221,7 +221,7 @@ bool LoadWaypointsFromFile(std::string inFilename)
         return false;
     }
 
-    amr_map_tools::Waypoint newWayPoint;
+    amr_waypoint_tools::Waypoint newWayPoint;
     TiXmlElement* RootElement = docLoad.RootElement();
     for(TiXmlNode* item = RootElement->FirstChild("Waypoint");item;item = item->NextSibling("Waypoint"))
     {
@@ -437,7 +437,7 @@ void NewWaypointInterMarker(InteractiveMarkerServer* inServer,string inName, geo
     wp_dis_marker.ns = "marker_waypoints";
     wp_dis_marker.action = visualization_msgs::Marker::ADD;
     wp_dis_marker.type = visualization_msgs::Marker::MESH_RESOURCE;
-    wp_dis_marker.mesh_resource = "package://amr_map_tools/meshes/waypoint.dae";
+    wp_dis_marker.mesh_resource = "package://amr_waypoint_tools/meshes/waypoint.dae";
     wp_dis_marker.scale.x = 1;
     wp_dis_marker.scale.y = 1;
     wp_dis_marker.scale.z = 1;
@@ -507,7 +507,7 @@ void NewChargerInterMarker(InteractiveMarkerServer* inServer,string inName, geom
     wp_dis_marker.ns = "marker_chargers";
     wp_dis_marker.action = visualization_msgs::Marker::ADD;
     wp_dis_marker.type = visualization_msgs::Marker::MESH_RESOURCE;
-    wp_dis_marker.mesh_resource = "package://amr_map_tools/meshes/charger.dae";
+    wp_dis_marker.mesh_resource = "package://amr_waypoint_tools/meshes/charger.dae";
     wp_dis_marker.scale.x = 1;
     wp_dis_marker.scale.y = 1;
     wp_dis_marker.scale.z = 1;
@@ -575,10 +575,10 @@ void DeleteChargerCallback( const visualization_msgs::InteractiveMarkerFeedbackC
 }
 
 // 添加新航点回调函数
-void AddWayPointCallback(const amr_map_tools::Waypoint::ConstPtr& wp)
+void AddWayPointCallback(const amr_waypoint_tools::Waypoint::ConstPtr& wp)
 {
     ROS_INFO("Add_waypoint: %s (%.2f %.2f) (%.2f %.2f %.2f %.2f) ",wp->name.c_str(), wp->pose.position.x, wp->pose.position.y, wp->pose.orientation.x, wp->pose.orientation.y, wp->pose.orientation.z, wp->pose.orientation.w);
-    amr_map_tools::Waypoint newWayPoint;
+    amr_waypoint_tools::Waypoint newWayPoint;
     newWayPoint = *wp;
     int nWPNum = arWaypoint.size();
     for(int i= 0;i<nWPNum;i++)
@@ -599,10 +599,10 @@ void AddWayPointCallback(const amr_map_tools::Waypoint::ConstPtr& wp)
 }
 
 // 添加新充电桩回调函数
-void AddChargerCallback(const amr_map_tools::Waypoint::ConstPtr& wp)
+void AddChargerCallback(const amr_waypoint_tools::Waypoint::ConstPtr& wp)
 {
     ROS_INFO("Add_charger: %s (%.2f %.2f) (%.2f %.2f %.2f %.2f) ",wp->name.c_str(), wp->pose.position.x, wp->pose.position.y, wp->pose.orientation.x, wp->pose.orientation.y, wp->pose.orientation.z, wp->pose.orientation.w);
-    amr_map_tools::Waypoint newCharger;
+    amr_waypoint_tools::Waypoint newCharger;
     newCharger = *wp;
     int nChargerNum = arCharger.size();
     for(int i= 0;i<nChargerNum;i++)
@@ -705,7 +705,7 @@ int main(int argc, char** argv)
             bDeleteWaypoint = false;
             wp_server.erase(strDelWaypointName);
             wp_server.applyChanges();
-            for(vector<amr_map_tools::Waypoint>::iterator iter=arWaypoint.begin(); iter!=arWaypoint.end(); )
+            for(vector<amr_waypoint_tools::Waypoint>::iterator iter=arWaypoint.begin(); iter!=arWaypoint.end(); )
             {
                 if( (*iter).name == strDelWaypointName)
                     iter = arWaypoint.erase(iter);
@@ -720,7 +720,7 @@ int main(int argc, char** argv)
             bDeleteCharger = false;
             wp_server.erase(strDelChargerName);
             wp_server.applyChanges();
-            for(vector<amr_map_tools::Waypoint>::iterator iter=arCharger.begin(); iter!=arCharger.end(); )
+            for(vector<amr_waypoint_tools::Waypoint>::iterator iter=arCharger.begin(); iter!=arCharger.end(); )
             {
                 if( (*iter).name == strDelChargerName)
                     iter = arCharger.erase(iter);

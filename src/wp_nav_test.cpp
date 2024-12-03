@@ -38,10 +38,10 @@
 #include <actionlib/client/simple_action_client.h>
 #include <tf/transform_listener.h>
 #include <visualization_msgs/Marker.h>
-#include <amr_map_tools/Waypoint.h>
-#include <amr_map_tools/GetNumOfWaypoints.h>
-#include <amr_map_tools/GetWaypointByIndex.h>
-#include <amr_map_tools/GetWaypointByName.h>
+#include <amr_waypoint_tools/Waypoint.h>
+#include <amr_waypoint_tools/GetNumOfWaypoints.h>
+#include <amr_waypoint_tools/GetWaypointByIndex.h>
+#include <amr_waypoint_tools/GetWaypointByName.h>
 #include <string>
 
 typedef actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction> MoveBaseClient;
@@ -51,12 +51,12 @@ int main(int argc, char** argv)
     ros::init(argc, argv, "wp_nav_test");
 
     ros::NodeHandle nh;
-    ros::ServiceClient cliGetNum = nh.serviceClient<amr_map_tools::GetNumOfWaypoints>("waypoint/get_num_waypoint");
-    ros::ServiceClient cliGetWPIndex = nh.serviceClient<amr_map_tools::GetWaypointByIndex>("waypoint/get_waypoint_index");
-    ros::ServiceClient cliGetWPName = nh.serviceClient<amr_map_tools::GetWaypointByName>("waypoint/get_waypoint_name");
+    ros::ServiceClient cliGetNum = nh.serviceClient<amr_waypoint_tools::GetNumOfWaypoints>("waypoint/get_num_waypoint");
+    ros::ServiceClient cliGetWPIndex = nh.serviceClient<amr_waypoint_tools::GetWaypointByIndex>("waypoint/get_waypoint_index");
+    ros::ServiceClient cliGetWPName = nh.serviceClient<amr_waypoint_tools::GetWaypointByName>("waypoint/get_waypoint_name");
 
     ///////////////////////////////////////////////////////////////////////////////////
-    amr_map_tools::GetNumOfWaypoints srvNum;
+    amr_waypoint_tools::GetNumOfWaypoints srvNum;
     if (cliGetNum.call(srvNum))
     {
         ROS_INFO("Num_wp = %d", (int)srvNum.response.num);
@@ -65,7 +65,7 @@ int main(int argc, char** argv)
     {
         ROS_ERROR("Failed to call service get_num_waypoints");
     }
-    amr_map_tools::GetWaypointByIndex srvI;
+    amr_waypoint_tools::GetWaypointByIndex srvI;
     for(int i=0;i<srvNum.response.num;i++)
     {
         srvI.request.index = i;
@@ -82,7 +82,7 @@ int main(int argc, char** argv)
         }
     }
     ////////////////////////////////////////////////////////////////////////////////////
-    // amr_map_tools::GetWaypointByName srvN;
+    // amr_waypoint_tools::GetWaypointByName srvN;
     // for(int i=0;i<10;i++)
     // {
     //     std::ostringstream stringStream;
@@ -118,7 +118,7 @@ int main(int argc, char** argv)
 
     while(ros::ok())
     {
-        amr_map_tools::GetNumOfWaypoints srvNum;
+        amr_waypoint_tools::GetNumOfWaypoints srvNum;
         if (cliGetNum.call(srvNum))
         {
             ROS_INFO("Num_wp = %ld", (long int)srvNum.response.num);
@@ -136,7 +136,7 @@ int main(int argc, char** argv)
             continue;
         }
 
-        amr_map_tools::GetWaypointByIndex srvI;
+        amr_waypoint_tools::GetWaypointByIndex srvI;
         srvI.request.index = nWPIndex;
 
         if (cliGetWPIndex.call(srvI))

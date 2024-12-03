@@ -39,10 +39,10 @@
 #include <tf/transform_listener.h>
 #include <tf/transform_broadcaster.h>
 #include <visualization_msgs/Marker.h>
-#include <amr_map_tools/Waypoint.h>
-#include <amr_map_tools/GetNumOfWaypoints.h>
-#include <amr_map_tools/GetWaypointByIndex.h>
-#include <amr_map_tools/GetWaypointByName.h>
+#include <amr_waypoint_tools/Waypoint.h>
+#include <amr_waypoint_tools/GetNumOfWaypoints.h>
+#include <amr_waypoint_tools/GetWaypointByIndex.h>
+#include <amr_waypoint_tools/GetWaypointByName.h>
 #include <std_msgs/String.h>
 #include <string>
 extern "C" {
@@ -74,16 +74,16 @@ int main(int argc, char** argv)
     InitUDPServer(20181); //本地监听端口
 
     ros::NodeHandle nh;
-    ros::ServiceClient cliGetNum = nh.serviceClient<amr_map_tools::GetNumOfWaypoints>("waypoint/get_num_waypoint");
-    ros::ServiceClient cliGetWPIndex = nh.serviceClient<amr_map_tools::GetWaypointByIndex>("waypoint/get_waypoint_index");
-    ros::ServiceClient cliGetWPName = nh.serviceClient<amr_map_tools::GetWaypointByName>("waypoint/get_waypoint_name");
+    ros::ServiceClient cliGetNum = nh.serviceClient<amr_waypoint_tools::GetNumOfWaypoints>("waypoint/get_num_waypoint");
+    ros::ServiceClient cliGetWPIndex = nh.serviceClient<amr_waypoint_tools::GetWaypointByIndex>("waypoint/get_waypoint_index");
+    ros::ServiceClient cliGetWPName = nh.serviceClient<amr_waypoint_tools::GetWaypointByName>("waypoint/get_waypoint_name");
     behaviors_pub = nh.advertise<std_msgs::String>("wpr1/behaviors", 30);
     ros::Subscriber res_grab = nh.subscribe("wpr1/grab_result", 30, GrabResultCB);
     ros::Subscriber res_pass = nh.subscribe("wpr1/pass_result", 30, PassResultCB);
 
     ///////////////////////////////////////////////////////////////////////////////////
     //把航点名称都列出来
-    amr_map_tools::GetNumOfWaypoints srvNum;
+    amr_waypoint_tools::GetNumOfWaypoints srvNum;
     if (cliGetNum.call(srvNum))
     {
         ROS_INFO("Num_wp = %d", (int)srvNum.response.num);
@@ -92,7 +92,7 @@ int main(int argc, char** argv)
     {
         ROS_ERROR("Failed to call service get_num_waypoints");
     }
-    amr_map_tools::GetWaypointByIndex srvI;
+    amr_waypoint_tools::GetWaypointByIndex srvI;
     for(int i=0;i<srvNum.response.num;i++)
     {
         srvI.request.index = i;
@@ -109,7 +109,7 @@ int main(int argc, char** argv)
         }
     }
     ////////////////////////////////////////////////////////////////////////////////////
-    // amr_map_tools::GetWaypointByName srvN;
+    // amr_waypoint_tools::GetWaypointByName srvN;
     // for(int i=0;i<10;i++)
     // {
     //     std::ostringstream stringStream;
@@ -151,7 +151,7 @@ int main(int argc, char** argv)
             if(st_ctrl.ctrl == CTRL_MOVETO_NAME)
             {
                 // 根据接收到的航点名称查询航点信息
-                amr_map_tools::GetWaypointByName srvN;
+                amr_waypoint_tools::GetWaypointByName srvN;
 
                 std::ostringstream stringStream;
                 stringStream << st_ctrl.wp_name;

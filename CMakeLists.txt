@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(amr_map_tools)
+project(amr_waypoint_tools)
 
 add_compile_options(-pthread)
 
@@ -45,7 +45,7 @@ link_directories(${TinyXML_LIBRARY_DIRS})
 catkin_package(
     CATKIN_DEPENDS message_runtime
     INCLUDE_DIRS include ${TinyXML_INCLUDE_DIRS}
-    LIBRARIES amr_map_tools
+    LIBRARIES amr_waypoint_tools
     DEPENDS TinyXML
 )
 
@@ -81,7 +81,7 @@ install(TARGETS
 )
 
 install(FILES
-    amr_map_tools_plugin.xml
+    amr_waypoint_tools_plugin.xml
     DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
 
 add_executable(amr_wp_manager

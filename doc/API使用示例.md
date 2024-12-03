@@ -6,17 +6,17 @@
 
 ```cpp
 #include <ros/ros.h>
-#include <amr_map_tools/GetNumOfWaypoints.h>
+#include <amr_waypoint_tools/GetNumOfWaypoints.h>
 
 int main(int argc, char** argv) {
     ros::init(argc, argv, "waypoint_counter_node");
     ros::NodeHandle nh;
 
     // 创建服务客户端
-    ros::ServiceClient client = nh.serviceClient<amr_map_tools::GetNumOfWaypoints>("waypoint/get_num_waypoint");
+    ros::ServiceClient client = nh.serviceClient<amr_waypoint_tools::GetNumOfWaypoints>("waypoint/get_num_waypoint");
 
     // 创建服务请求
-    amr_map_tools::GetNumOfWaypoints srv;
+    amr_waypoint_tools::GetNumOfWaypoints srv;
 
     // 调用服务
     if (client.call(srv)) {
@@ -33,7 +33,7 @@ int main(int argc, char** argv) {
 ```python
 #!/usr/bin/env python
 import rospy
-from amr_map_tools.srv import GetNumOfWaypoints
+from amr_waypoint_tools.srv import GetNumOfWaypoints
 
 def get_waypoint_count():
     rospy.init_node('waypoint_counter_node', anonymous=True)
@@ -60,15 +60,15 @@ if __name__ == "__main__":
 
 ```cpp
 #include <ros/ros.h>
-#include <amr_map_tools/GetWaypointByIndex.h>
+#include <amr_waypoint_tools/GetWaypointByIndex.h>
 
 int main(int argc, char** argv) {
     ros::init(argc, argv, "waypoint_getter_node");
     ros::NodeHandle nh;
 
-    ros::ServiceClient client = nh.serviceClient<amr_map_tools::GetWaypointByIndex>("waypoint/get_waypoint_index");
+    ros::ServiceClient client = nh.serviceClient<amr_waypoint_tools::GetWaypointByIndex>("waypoint/get_waypoint_index");
 
-    amr_map_tools::GetWaypointByIndex srv;
+    amr_waypoint_tools::GetWaypointByIndex srv;
     srv.request.index = 0;  // 获取第一个航点
 
     if (client.call(srv)) {
@@ -89,7 +89,7 @@ int main(int argc, char** argv) {
 ```python
 #!/usr/bin/env python
 import rospy
-from amr_map_tools.srv import GetWaypointByIndex
+from amr_waypoint_tools.srv import GetWaypointByIndex
 
 def get_waypoint_by_index(index):
     rospy.init_node('waypoint_getter_node', anonymous=True)
@@ -116,15 +116,15 @@ if __name__ == "__main__":
 
 ```cpp
 #include <ros/ros.h>
-#include <amr_map_tools/GetWaypointByName.h>
+#include <amr_waypoint_tools/GetWaypointByName.h>
 
 int main(int argc, char** argv) {
     ros::init(argc, argv, "waypoint_name_getter_node");
     ros::NodeHandle nh;
 
-    ros::ServiceClient client = nh.serviceClient<amr_map_tools::GetWaypointByName>("waypoint/get_waypoint_name");
+    ros::ServiceClient client = nh.serviceClient<amr_waypoint_tools::GetWaypointByName>("waypoint/get_waypoint_name");
 
-    amr_map_tools::GetWaypointByName srv;
+    amr_waypoint_tools::GetWaypointByName srv;
     srv.request.name = "kitchen";  // 获取名为"kitchen"的航点
 
     if (client.call(srv)) {
@@ -145,7 +145,7 @@ int main(int argc, char** argv) {
 ```python
 #!/usr/bin/env python
 import rospy
-from amr_map_tools.srv import GetWaypointByName
+from amr_waypoint_tools.srv import GetWaypointByName
 
 def get_waypoint_by_name(name):
     rospy.init_node('waypoint_name_getter_node', anonymous=True)
@@ -172,15 +172,15 @@ if __name__ == "__main__":
 
 ```cpp
 #include <ros/ros.h>
-#include <amr_map_tools/Waypoint.h>
+#include <amr_waypoint_tools/Waypoint.h>
 
 int main(int argc, char** argv) {
     ros::init(argc, argv, "waypoint_adder_node");
     ros::NodeHandle nh;
 
-    ros::Publisher wp_pub = nh.advertise<amr_map_tools::Waypoint>("waypoint/add_waypoint", 1);
+    ros::Publisher wp_pub = nh.advertise<amr_waypoint_tools::Waypoint>("waypoint/add_waypoint", 1);
 
-    amr_map_tools::Waypoint wp;
+    amr_waypoint_tools::Waypoint wp;
     wp.frame_id = "map";
     wp.name = "new_kitchen";
     wp.pose.position.x = 2.0;
@@ -203,7 +203,7 @@ int main(int argc, char** argv) {
 ```python
 #!/usr/bin/env python
 import rospy
-from amr_map_tools.msg import Waypoint
+from amr_waypoint_tools.msg import Waypoint
 from geometry_msgs.msg import Pose
 
 def add_new_waypoint():
@@ -416,22 +416,22 @@ if __name__ == "__main__":
 
 ```cpp
 #include <ros/ros.h>
-#include <amr_map_tools/GetNumOfWaypoints.h>
-#include <amr_map_tools/GetWaypointByIndex.h>
-#include <amr_map_tools/Waypoint.h>
+#include <amr_waypoint_tools/GetNumOfWaypoints.h>
+#include <amr_waypoint_tools/GetWaypointByIndex.h>
+#include <amr_waypoint_tools/Waypoint.h>
 
 class ChargerManager {
 public:
     ChargerManager() : nh_("~") {
         // 创建服务客户端
-        num_client_ = nh_.serviceClient<amr_map_tools::GetNumOfWaypoints>("/waypoint/get_num_charger");
-        index_client_ = nh_.serviceClient<amr_map_tools::GetWaypointByIndex>("/waypoint/get_charger_index");
-        charger_pub_ = nh_.advertise<amr_map_tools::Waypoint>("/waypoint/add_charger", 1);
+        num_client_ = nh_.serviceClient<amr_waypoint_tools::GetNumOfWaypoints>("/waypoint/get_num_charger");
+        index_client_ = nh_.serviceClient<amr_waypoint_tools::GetWaypointByIndex>("/waypoint/get_charger_index");
+        charger_pub_ = nh_.advertise<amr_waypoint_tools::Waypoint>("/waypoint/add_charger", 1);
     }
 
     // 获取充电桩数量
     int getChargerCount() {
-        amr_map_tools::GetNumOfWaypoints srv;
+        amr_waypoint_tools::GetNumOfWaypoints srv;
         if (num_client_.call(srv)) {
             ROS_INFO("充电桩数量: %d", srv.response.num);
             return srv.response.num;
@@ -444,7 +444,7 @@ public:
         int count = getChargerCount();
         if (count <= 0) return;
 
-        amr_map_tools::GetWaypointByIndex srv;
+        amr_waypoint_tools::GetWaypointByIndex srv;
         for (int i = 0; i < count; i++) {
             srv.request.index = i;
             if (index_client_.call(srv)) {
@@ -459,7 +459,7 @@ public:
 
     // 添加新充电桩
     void addNewCharger(const std::string& name, double x, double y) {
-        amr_map_tools::Waypoint charger;
+        amr_waypoint_tools::Waypoint charger;
         charger.frame_id = "map";
         charger.name = name;
         charger.pose.position.x = x;
@@ -498,8 +498,8 @@ int main(int argc, char** argv) {
 ```python
 #!/usr/bin/env python
 import rospy
-from amr_map_tools.srv import GetNumOfWaypoints, GetWaypointByIndex
-from amr_map_tools.msg import Waypoint
+from amr_waypoint_tools.srv import GetNumOfWaypoints, GetWaypointByIndex
+from amr_waypoint_tools.msg import Waypoint
 from geometry_msgs.msg import Pose
 
 class ChargerManager:
@@ -579,13 +579,13 @@ if __name__ == '__main__':
 #include <ros/ros.h>
 #include <std_msgs/String.h>
 #include <geometry_msgs/Pose.h>
-#include <amr_map_tools/GetWaypointByName.h>
+#include <amr_waypoint_tools/GetWaypointByName.h>
 
 class NavigationApplication {
 public:
     NavigationApplication() : nh_("~") {
         // 初始化服务客户端和发布者
-        wp_client_ = nh_.serviceClient<amr_map_tools::GetWaypointByName>("/waypoint/get_waypoint_name");
+        wp_client_ = nh_.serviceClient<amr_waypoint_tools::GetWaypointByName>("/waypoint/get_waypoint_name");
         navi_pub_ = nh_.advertise<std_msgs::String>("/waypoint/navi_waypoint", 1);
         result_sub_ = nh_.subscribe("/waypoint/navi_result", 10,
                                   &NavigationApplication::navigationResultCallback,
@@ -597,7 +597,7 @@ public:
         current_target_ = target_point;
 
         // 获取目标点位置
-        amr_map_tools::GetWaypointByName srv;
+        amr_waypoint_tools::GetWaypointByName srv;
         srv.request.name = target_point;
 
         if (wp_client_.call(srv)) {
@@ -657,7 +657,7 @@ int main(int argc, char** argv) {
 #!/usr/bin/env python
 import rospy
 from std_msgs.msg import String
-from amr_map_tools.srv import GetWaypointByName
+from amr_waypoint_tools.srv import GetWaypointByName
 
 class NavigationApplication:
     def __init__(self):

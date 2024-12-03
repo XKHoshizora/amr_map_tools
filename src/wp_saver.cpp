@@ -34,7 +34,7 @@
 /* @author Zhang Wanjie                                             */
 
 #include <ros/ros.h>
-#include <amr_map_tools/SaveWaypoints.h>
+#include <amr_waypoint_tools/SaveWaypoints.h>
 #include <unistd.h>
 
 int main(int argc, char** argv)
@@ -42,8 +42,8 @@ int main(int argc, char** argv)
     ros::init(argc, argv, "wp_saver");
 
     ros::NodeHandle nh;
-    ros::ServiceClient cliSave = nh.serviceClient<amr_map_tools::SaveWaypoints>("waypoint/save_waypoints");
-    amr_map_tools::SaveWaypoints srvS;
+    ros::ServiceClient cliSave = nh.serviceClient<amr_waypoint_tools::SaveWaypoints>("waypoint/save_waypoints");
+    amr_waypoint_tools::SaveWaypoints srvS;
 
     std::string strSaveFile;
     char const* home = getenv("HOME");

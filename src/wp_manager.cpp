@@ -37,29 +37,29 @@
 #include <ros/ros.h>
 #include <tf/transform_listener.h>
 #include <visualization_msgs/Marker.h>
-#include <amr_map_tools/Waypoint.h>
-#include <amr_map_tools/GetNumOfWaypoints.h>
-#include <amr_map_tools/GetWaypointByIndex.h>
-#include <amr_map_tools/GetWaypointByName.h>
-#include <amr_map_tools/SaveWaypoints.h>
+#include <amr_waypoint_tools/Waypoint.h>
+#include <amr_waypoint_tools/GetNumOfWaypoints.h>
+#include <amr_waypoint_tools/GetWaypointByIndex.h>
+#include <amr_waypoint_tools/GetWaypointByName.h>
+#include <amr_waypoint_tools/SaveWaypoints.h>
 #include <string>
 
-static std::vector <amr_map_tools::Waypoint> arWaypoint;
-static std::vector <amr_map_tools::Waypoint> arCharger;
+static std::vector <amr_waypoint_tools::Waypoint> arWaypoint;
+static std::vector <amr_waypoint_tools::Waypoint> arCharger;
 static ros::Publisher marker_pub;
 static ros::Publisher charger_pub;
 static visualization_msgs::Marker marker_waypoints;
 static visualization_msgs::Marker marker_chargers;
 static visualization_msgs::Marker text_marker;
 
-bool getNumOfWaypoints(amr_map_tools::GetNumOfWaypoints::Request &req, amr_map_tools::GetNumOfWaypoints::Response &res)
+bool getNumOfWaypoints(amr_waypoint_tools::GetNumOfWaypoints::Request &req, amr_waypoint_tools::GetNumOfWaypoints::Response &res)
 {
     res.num = arWaypoint.size();
     ROS_INFO("Get_num_wp: num_wp = %d", res.num);
     return true;
 }
 
-bool getWaypointByIndex(amr_map_tools::GetWaypointByIndex::Request &req, amr_map_tools::GetWaypointByIndex::Response &res)
+bool getWaypointByIndex(amr_waypoint_tools::GetWaypointByIndex::Request &req, amr_waypoint_tools::GetWaypointByIndex::Response &res)
 {
     int nIndex = req.index;
     int nNumWP = arWaypoint.size();
@@ -77,7 +77,7 @@ bool getWaypointByIndex(amr_map_tools::GetWaypointByIndex::Request &req, amr_map
     }
 }
 
-bool getWaypointByName(amr_map_tools::GetWaypointByName::Request &req, amr_map_tools::GetWaypointByName::Response &res)
+bool getWaypointByName(amr_waypoint_tools::GetWaypointByName::Request &req, amr_waypoint_tools::GetWaypointByName::Response &res)
 {
     std::string reqName = req.name;
     int nNumWP = arWaypoint.size();
@@ -105,14 +105,14 @@ bool getWaypointByName(amr_map_tools::GetWaypointByName::Request &req, amr_map_t
     }
 }
 
-bool getNumOfChargers(amr_map_tools::GetNumOfWaypoints::Request &req, amr_map_tools::GetNumOfWaypoints::Response &res)
+bool getNumOfChargers(amr_waypoint_tools::GetNumOfWaypoints::Request &req, amr_waypoint_tools::GetNumOfWaypoints::Response &res)
 {
     res.num = arCharger.size();
     ROS_INFO("Get_num_ch: num_ch = %d", res.num);
     return true;
 }
 
-bool getChargerByIndex(amr_map_tools::GetWaypointByIndex::Request &req, amr_map_tools::GetWaypointByIndex::Response &res)
+bool getChargerByIndex(amr_waypoint_tools::GetWaypointByIndex::Request &req, amr_waypoint_tools::GetWaypointByIndex::Response &res)
 {
     int nIndex = req.index;
     int nNumCh = arCharger.size();
@@ -130,7 +130,7 @@ bool getChargerByIndex(amr_map_tools::GetWaypointByIndex::Request &req, amr_map_
     }
 }
 
-bool getChargerByName(amr_map_tools::GetWaypointByName::Request &req, amr_map_tools::GetWaypointByName::Response &res)
+bool getChargerByName(amr_waypoint_tools::GetWaypointByName::Request &req, amr_waypoint_tools::GetWaypointByName::Response &res)
 {
     std::string reqName = req.name;
     int nNumCh = arCharger.size();
@@ -159,7 +159,7 @@ bool getChargerByName(amr_map_tools::GetWaypointByName::Request &req, amr_map_to
 }
 
 bool SaveWaypointsToFile(std::string inFilename);
-bool saveWaypoints(amr_map_tools::SaveWaypoints::Request &req, amr_map_tools::SaveWaypoints::Response &res)
+bool saveWaypoints(amr_waypoint_tools::SaveWaypoints::Request &req, amr_waypoint_tools::SaveWaypoints::Response &res)
 {
     return SaveWaypointsToFile(req.filename);
 }
@@ -235,7 +235,7 @@ bool LoadWaypointsFromFile(std::string inFilename)
         return false;
     }
 
-    amr_map_tools::Waypoint newWayPoint;
+    amr_waypoint_tools::Waypoint newWayPoint;
     TiXmlElement* RootElement = docLoad.RootElement();
     for(TiXmlNode* item = RootElement->FirstChild("Waypoint");item;item = item->NextSibling("Waypoint"))
     {
@@ -306,7 +306,7 @@ void Init_Marker()
     marker_waypoints.ns = "marker_waypoints";
     marker_waypoints.action = visualization_msgs::Marker::ADD;
     marker_waypoints.type = visualization_msgs::Marker::MESH_RESOURCE;
-    marker_waypoints.mesh_resource = "package://amr_map_tools/meshes/waypoint.dae";
+    marker_waypoints.mesh_resource = "package://amr_waypoint_tools/meshes/waypoint.dae";
     marker_waypoints.scale.x = 1;
     marker_waypoints.scale.y = 1;
     marker_waypoints.scale.z = 1;
@@ -319,7 +319,7 @@ void Init_Marker()
     marker_chargers.ns = "marker_waypoints";
     marker_chargers.action = visualization_msgs::Marker::ADD;
     marker_chargers.type = visualization_msgs::Marker::MESH_RESOURCE;
-    marker_chargers.mesh_resource = "package://amr_map_tools/meshes/charger.dae";
+    marker_chargers.mesh_resource = "package://amr_waypoint_tools/meshes/charger.dae";
     marker_chargers.scale.x = 1;
     marker_chargers.scale.y = 1;
     marker_chargers.scale.z = 1;
@@ -396,18 +396,18 @@ void DrawTextMarker(ros::Publisher* inPub, std::string inText, int inID, float i
     inPub->publish(text_marker);
 }
 
-void AddWayPointCallback(const amr_map_tools::Waypoint::ConstPtr& wp)
+void AddWayPointCallback(const amr_waypoint_tools::Waypoint::ConstPtr& wp)
 {
     ROS_INFO("Add_waypoint: %s (%.2f %.2f) (%.2f %.2f %.2f %.2f) ",wp->name.c_str(), wp->pose.position.x, wp->pose.position.y, wp->pose.orientation.x, wp->pose.orientation.y, wp->pose.orientation.z, wp->pose.orientation.w);
-    amr_map_tools::Waypoint newWayPoint;
+    amr_waypoint_tools::Waypoint newWayPoint;
     newWayPoint = *wp;
     arWaypoint.push_back(newWayPoint);
 }
 
-void AddChargerCallback(const amr_map_tools::Waypoint::ConstPtr& wp)
+void AddChargerCallback(const amr_waypoint_tools::Waypoint::ConstPtr& wp)
 {
     ROS_INFO("Add_charger: %s (%.2f %.2f) (%.2f %.2f %.2f %.2f) ",wp->name.c_str(), wp->pose.position.x, wp->pose.position.y, wp->pose.orientation.x, wp->pose.orientation.y, wp->pose.orientation.z, wp->pose.orientation.w);
-    amr_map_tools::Waypoint newCharger;
+    amr_waypoint_tools::Waypoint newCharger;
     newCharger = *wp;
     arCharger.push_back(newCharger);
 }

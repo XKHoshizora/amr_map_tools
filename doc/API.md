@@ -136,13 +136,13 @@ geometry_msgs/Pose pose  # 航点的位置和方向
 #### 添加航点
 
 - **话题**: `waypoint/add_waypoint`
-- **类型**: `amr_map_tools/Waypoint`
+- **类型**: `amr_waypoint_tools/Waypoint`
 - **描述**: 向系统添加新的航点
 
 #### 添加充电桩
 
 - **话题**: `waypoint/add_charger`
-- **类型**: `amr_map_tools/Waypoint`
+- **类型**: `amr_waypoint_tools/Waypoint`
 - **描述**: 向系统添加新的充电桩
 
 #### 导航到航点
@@ -222,15 +222,15 @@ geometry_msgs/Pose pose  # 航点的位置和方向
 
 ```cpp
 // 获取航点数量
-ros::ServiceClient client = nh.serviceClient<amr_map_tools::GetNumOfWaypoints>("waypoint/get_num_waypoint");
-amr_map_tools::GetNumOfWaypoints srv;
+ros::ServiceClient client = nh.serviceClient<amr_waypoint_tools::GetNumOfWaypoints>("waypoint/get_num_waypoint");
+amr_waypoint_tools::GetNumOfWaypoints srv;
 if(client.call(srv)) {
     int num_waypoints = srv.response.num;
 }
 
 // 通过名称获取航点
-ros::ServiceClient client = nh.serviceClient<amr_map_tools::GetWaypointByName>("waypoint/get_waypoint_name");
-amr_map_tools::GetWaypointByName srv;
+ros::ServiceClient client = nh.serviceClient<amr_waypoint_tools::GetWaypointByName>("waypoint/get_waypoint_name");
+amr_waypoint_tools::GetWaypointByName srv;
 srv.request.name = "waypoint1";
 if(client.call(srv)) {
     geometry_msgs::Pose pose = srv.response.pose;
@@ -238,8 +238,8 @@ if(client.call(srv)) {
 }
 
 // 通过索引获取航点
-ros::ServiceClient client = nh.serviceClient<amr_map_tools::GetWaypointByIndex>("waypoint/get_waypoint_index");
-amr_map_tools::GetWaypointByIndex srv;
+ros::ServiceClient client = nh.serviceClient<amr_waypoint_tools::GetWaypointByIndex>("waypoint/get_waypoint_index");
+amr_waypoint_tools::GetWaypointByIndex srv;
 srv.request.index = 0;
 if(client.call(srv)) {
     std::string name = srv.response.name;
@@ -251,8 +251,8 @@ if(client.call(srv)) {
 ### 发布新的航点
 
 ```cpp
-ros::Publisher wp_pub = nh.advertise<amr_map_tools::Waypoint>("waypoint/add_waypoint", 1);
-amr_map_tools::Waypoint wp;
+ros::Publisher wp_pub = nh.advertise<amr_waypoint_tools::Waypoint>("waypoint/add_waypoint", 1);
+amr_waypoint_tools::Waypoint wp;
 wp.frame_id = "map";
 wp.name = "new_waypoint";
 wp.pose.position.x = 1.0;

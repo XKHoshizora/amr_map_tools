@@ -1,4 +1,4 @@
-<library path="lib/libamr_map_tools">
+<library path="lib/libamr_waypoint_tools">
   <class name="rviz/AddWaypoint"
          type="rviz::AddWaypointTool"
          base_class_type="rviz::Tool">

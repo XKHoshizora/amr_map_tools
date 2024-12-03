@@ -7,7 +7,7 @@
   <!-- RViz and TF tree -->
   <arg name="model" default="$(find wpv3_bringup)/urdf/wpv3.urdf"/>
   <arg name="gui" default="true" />
-  <arg name="rvizconfig" default="$(find amr_map_tools)/rviz/nav.rviz" />
+  <arg name="rvizconfig" default="$(find amr_waypoint_tools)/rviz/nav.rviz" />
 
   <param name="robot_description" command="$(find xacro)/xacro $(arg model)" />
   <param name="use_gui" value="$(arg gui)"/>
@@ -15,11 +15,11 @@
   <node name="rviz" pkg="rviz" type="rviz" args="-d $(arg rvizconfig)" required="true" />
 
   <!-- Map tools  -->
-  <node pkg="amr_map_tools" type="amr_wp_manager" name="amr_wp_manager" output="screen">
+  <node pkg="amr_waypoint_tools" type="amr_wp_manager" name="amr_wp_manager" output="screen">
     <param name="load" type="string" value="/home/master/waypoints.xml"/>
   </node>
 
   <!-- WP_navi_server  -->
-  <node pkg="amr_map_tools" type="amr_wp_navi_server" name="amr_wp_navi_server" output="screen"/>
+  <node pkg="amr_waypoint_tools" type="amr_wp_navi_server" name="amr_wp_navi_server" output="screen"/>
 
 </launch>

@@ -35,8 +35,8 @@
 
 #include <tf/transform_listener.h>
 #include <geometry_msgs/PoseStamped.h>
-#include <amr_map_tools/Waypoint.h>
-#include <amr_map_tools/GetWaypointByName.h>
+#include <amr_waypoint_tools/Waypoint.h>
+#include <amr_waypoint_tools/GetWaypointByName.h>
 #include "rviz/display_context.h"
 #include "rviz/properties/string_property.h"
 #include "add_waypoint_tool.h"
@@ -64,8 +64,8 @@ namespace rviz
 
     void AddWaypointTool::updateTopic()
     {
-        pub_ = nh_.advertise<amr_map_tools::Waypoint>( topic_property_->getStdString(), 1);
-        cliGetWPName = nh_.serviceClient<amr_map_tools::GetWaypointByName>("/waypoint/get_waypoint_name");
+        pub_ = nh_.advertise<amr_waypoint_tools::Waypoint>( topic_property_->getStdString(), 1);
+        cliGetWPName = nh_.serviceClient<amr_waypoint_tools::GetWaypointByName>("/waypoint/get_waypoint_name");
     }
 
     void AddWaypointTool::onPoseSet(double x, double y, double theta)
@@ -79,14 +79,14 @@ namespace rviz
         ROS_INFO("Add new waypoint: Frame:%s, Position(%.3f, %.3f, %.3f), Orientation(%.3f, %.3f, %.3f, %.3f) = Angle: %.3f\n", fixed_frame.c_str(),
             new_pos.pose.position.x, new_pos.pose.position.y, new_pos.pose.position.z,
             new_pos.pose.orientation.x, new_pos.pose.orientation.y, new_pos.pose.orientation.z, new_pos.pose.orientation.w, theta);
-        amr_map_tools::Waypoint new_waypoint;
+        amr_waypoint_tools::Waypoint new_waypoint;
 
         nWaypointCount ++;
         std::ostringstream stringStream;
         stringStream << nWaypointCount;
         std::string strNewName = stringStream.str();
 
-        amr_map_tools::GetWaypointByName srvN;
+        amr_waypoint_tools::GetWaypointByName srvN;
         srvN.request.name = strNewName;
         while (cliGetWPName.call(srvN))
         {

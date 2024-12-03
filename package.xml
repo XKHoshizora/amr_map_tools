@@ -1,11 +1,11 @@
 <?xml version="1.0"?><package>
-  <name>amr_map_tools</name>
+  <name>amr_waypoint_tools</name>
   <version>0.1.0</version>
-  <description>The amr_map_tools package</description>
+  <description>The amr_waypoint_tools package</description>
 
-  <maintainer email="zhangwanjie@6-robot.com">Zhang Wanjie</maintainer>
+  <maintainer email="hoshizoranihon@gmail.com">Zhang Wanjie</maintainer>
 
-  <url type="website">http://www.6-robot.com</url>
+  <url type="website">https://github.com/XKHoshizora</url>
 
   <license>BSD</license>
 
@@ -35,6 +35,6 @@
   <run_depend>tinyxml</run_depend>
 
   <export>
-    <rviz plugin="${prefix}/amr_map_tools_plugin.xml"/>
+    <rviz plugin="${prefix}/amr_waypoint_tools_plugin.xml"/>
   </export>
 </package>

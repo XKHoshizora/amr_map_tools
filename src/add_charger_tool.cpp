@@ -35,8 +35,8 @@
 
 #include <tf/transform_listener.h>
 #include <geometry_msgs/PoseStamped.h>
-#include <amr_map_tools/Waypoint.h>
-#include <amr_map_tools/GetChargerByName.h>
+#include <amr_waypoint_tools/Waypoint.h>
+#include <amr_waypoint_tools/GetChargerByName.h>
 #include "rviz/display_context.h"
 #include "rviz/properties/string_property.h"
 #include "add_charger_tool.h"
@@ -64,8 +64,8 @@ namespace rviz
 
     void AddChargerTool::updateTopic()
     {
-        pub_ = nh_.advertise<amr_map_tools::Waypoint>( topic_property_->getStdString(), 1);
-        cliGetChName = nh_.serviceClient<amr_map_tools::GetChargerByName>("/waypoint/get_charger_name");
+        pub_ = nh_.advertise<amr_waypoint_tools::Waypoint>( topic_property_->getStdString(), 1);
+        cliGetChName = nh_.serviceClient<amr_waypoint_tools::GetChargerByName>("/waypoint/get_charger_name");
     }
 
     void AddChargerTool::onPoseSet(double x, double y, double theta)
@@ -79,14 +79,14 @@ namespace rviz
         ROS_INFO("Add new charger: Frame:%s, Position(%.3f, %.3f, %.3f), Orientation(%.3f, %.3f, %.3f, %.3f) = Angle: %.3f\n", fixed_frame.c_str(),
             new_pos.pose.position.x, new_pos.pose.position.y, new_pos.pose.position.z,
             new_pos.pose.orientation.x, new_pos.pose.orientation.y, new_pos.pose.orientation.z, new_pos.pose.orientation.w, theta);
-        amr_map_tools::Waypoint new_charger;
+        amr_waypoint_tools::Waypoint new_charger;
 
         nChargerCount ++;
         std::ostringstream stringStream;
         stringStream << "c" << nChargerCount;
         std::string strNewName = stringStream.str();
 
-        amr_map_tools::GetChargerByName srvN;
+        amr_waypoint_tools::GetChargerByName srvN;
         srvN.request.name = strNewName;
         while (cliGetChName.call(srvN))
         {

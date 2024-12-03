@@ -4,11 +4,11 @@
   <node name="map_server" pkg="map_server" type="map_server" args="$(find wpb_mani_tutorials)/maps/map.yaml"/>
 
   <!-- RViz and TF  -->
-  <arg name="rvizconfig" default="$(find amr_map_tools)/rviz/editwaypoints.rviz" />
+  <arg name="rvizconfig" default="$(find amr_waypoint_tools)/rviz/editwaypoints.rviz" />
   <node name="rviz" pkg="rviz" type="rviz" args="-d $(arg rvizconfig)" required="true" />
   <node pkg="tf" type="static_transform_publisher" name="base_to_laser_broadcaster" args="0 0 0 0 0 0 /map /base_link 100"/>
 
   <!-- Map tools  -->
-  <node pkg="amr_map_tools" type="amr_wp_edit_node" name="amr_wp_edit_node" output="screen"/>
+  <node pkg="amr_waypoint_tools" type="amr_wp_edit_node" name="amr_wp_edit_node" output="screen"/>
 
 </launch>
