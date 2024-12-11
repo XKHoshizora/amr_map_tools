@@ -35,6 +35,6 @@
   <run_depend>tinyxml</run_depend>
 
   <export>
-    <rviz plugin="${prefix}/amr_waypoint_tools_plugin.xml"/>
+    <rviz plugin="${prefix}/waypoint_tools_plugin.xml"/>
   </export>
 </package>
