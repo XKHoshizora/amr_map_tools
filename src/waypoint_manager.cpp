@@ -42,26 +42,15 @@
 #include <amr_waypoint_tools/GetWaypointByIndex.h>
 #include <amr_waypoint_tools/GetWaypointByName.h>
 #include <amr_waypoint_tools/SaveWaypoints.h>
-#include <interactive_markers/interactive_marker_server.h>
-#include <interactive_markers/menu_handler.h>
 #include <string>
-
-using namespace visualization_msgs;
-using namespace interactive_markers;
-using namespace std;
 
 static std::vector <amr_waypoint_tools::Waypoint> arWaypoint;
 static std::vector <amr_waypoint_tools::Waypoint> arCharger;
 static ros::Publisher marker_pub;
+static ros::Publisher charger_pub;
+static visualization_msgs::Marker marker_waypoints;
+static visualization_msgs::Marker marker_chargers;
 static visualization_msgs::Marker text_marker;
-static InteractiveMarkerServer* pWaypointServer = NULL;
-static MenuHandler* pMenuWaypoint = NULL;
-static MenuHandler* pMenuCharger = NULL;
-
-bool bDeleteWaypoint = false;
-std::string strDelWaypointName;
-bool bDeleteCharger = false;
-std::string strDelChargerName;
 
 bool getNumOfWaypoints(amr_waypoint_tools::GetNumOfWaypoints::Request &req, amr_waypoint_tools::GetNumOfWaypoints::Response &res)
 {
@@ -112,6 +101,31 @@ bool getWaypointByName(amr_waypoint_tools::GetWaypointByName::Request &req, amr_
     else
     {
         ROS_INFO("Get_wp_name: failed! There is no waypoint name %s", reqName.c_str());
+        return false;
+    }
+}
+
+bool getNumOfChargers(amr_waypoint_tools::GetNumOfWaypoints::Request &req, amr_waypoint_tools::GetNumOfWaypoints::Response &res)
+{
+    res.num = arCharger.size();
+    ROS_INFO("Get_num_ch: num_ch = %d", res.num);
+    return true;
+}
+
+bool getChargerByIndex(amr_waypoint_tools::GetWaypointByIndex::Request &req, amr_waypoint_tools::GetWaypointByIndex::Response &res)
+{
+    int nIndex = req.index;
+    int nNumCh = arCharger.size();
+    if(nIndex >= 0 && nIndex < nNumCh)
+    {
+        res.name = arCharger[nIndex].name;
+        res.pose = arCharger[nIndex].pose;
+        ROS_INFO("Get_ch_index: name = %s", arCharger[nIndex].name.c_str());
+        return true;
+    }
+    else
+    {
+        ROS_INFO("Get_ch_index: failed! index = %d , num_ch= %d", nIndex , nNumCh);
         return false;
     }
 }
@@ -169,7 +183,7 @@ std::string Int2Str(int inVal)
 bool SaveWaypointsToFile(std::string inFilename)
 {
     TiXmlDocument *docSave = new TiXmlDocument();
-    TiXmlElement *RootElement = new TiXmlElement("Waterplus");
+    TiXmlElement *RootElement = new TiXmlElement("AMRWaypoints");
     docSave->LinkEndChild(RootElement);
 
     int nNumWP = arWaypoint.size();
@@ -286,6 +300,78 @@ bool LoadWaypointsFromFile(std::string inFilename)
     return true;
 }
 
+void Init_Marker()
+{
+    marker_waypoints.header.frame_id = "map";
+    marker_waypoints.ns = "marker_waypoints";
+    marker_waypoints.action = visualization_msgs::Marker::ADD;
+    marker_waypoints.type = visualization_msgs::Marker::MESH_RESOURCE;
+    marker_waypoints.mesh_resource = "package://amr_waypoint_tools/meshes/waypoint.dae";
+    marker_waypoints.scale.x = 1;
+    marker_waypoints.scale.y = 1;
+    marker_waypoints.scale.z = 1;
+    marker_waypoints.color.r = 1.0;
+    marker_waypoints.color.g = 0.0;
+    marker_waypoints.color.b = 1.0;
+    marker_waypoints.color.a = 1.0;
+
+    marker_chargers.header.frame_id = "map";
+    marker_chargers.ns = "marker_waypoints";
+    marker_chargers.action = visualization_msgs::Marker::ADD;
+    marker_chargers.type = visualization_msgs::Marker::MESH_RESOURCE;
+    marker_chargers.mesh_resource = "package://amr_waypoint_tools/meshes/charger.dae";
+    marker_chargers.scale.x = 1;
+    marker_chargers.scale.y = 1;
+    marker_chargers.scale.z = 1;
+    marker_chargers.color.r = 0.5;
+    marker_chargers.color.g = 0.0;
+    marker_chargers.color.b = 1.0;
+    marker_chargers.color.a = 1.0;
+}
+
+void DrawTextMarker(ros::Publisher* inPub, std::string inText, int inID, float inScale, float inX, float inY, float inZ, float inR, float inG, float inB);
+void PublishWaypointsMarker()
+{
+    int nNumWP = arWaypoint.size();
+    for(int i=0; i<nNumWP ; i++ )
+    {
+        marker_waypoints.id = i;
+        marker_waypoints.pose.position.x = arWaypoint[i].pose.position.x;
+        marker_waypoints.pose.position.y = arWaypoint[i].pose.position.y;
+        marker_waypoints.pose.position.z = -0.01;
+        marker_waypoints.pose.orientation = arWaypoint[i].pose.orientation;
+        marker_pub.publish(marker_waypoints);
+        ros::spinOnce();
+
+        float wp_x = arWaypoint[i].pose.position.x;
+        float wp_y = arWaypoint[i].pose.position.y;
+
+        std::string wp_name = arWaypoint[i].name;
+        DrawTextMarker(&marker_pub,wp_name,i,0.2,wp_x,wp_y,0.55,1.0,0.0,0.0);
+        ros::spinOnce();
+    }
+
+    int nNumCh = arCharger.size();
+    for(int i=0; i<nNumCh ; i++ )
+    {
+        marker_chargers.id = i;
+        marker_chargers.pose.position.x = arCharger[i].pose.position.x;
+        marker_chargers.pose.position.y = arCharger[i].pose.position.y;
+        marker_chargers.pose.position.z = -0.01;
+        marker_chargers.pose.orientation = arCharger[i].pose.orientation;
+
+        charger_pub.publish(marker_chargers);
+        ros::spinOnce();
+
+        float ch_x = arCharger[i].pose.position.x;
+        float ch_y = arCharger[i].pose.position.y;
+
+        std::string wp_name = arCharger[i].name;
+        DrawTextMarker(&charger_pub, wp_name,i,0.2,ch_x,ch_y,0.35,1.0,0.0,0.0);
+        ros::spinOnce();
+    }
+}
+
 void DrawTextMarker(ros::Publisher* inPub, std::string inText, int inID, float inScale, float inX, float inY, float inZ, float inR, float inG, float inB)
 {
     text_marker.header.frame_id = "map";
@@ -310,321 +396,25 @@ void DrawTextMarker(ros::Publisher* inPub, std::string inText, int inID, float i
     inPub->publish(text_marker);
 }
 
-void RemoveTextMarker()
-{
-    text_marker.action = 3;
-    marker_pub.publish(text_marker);
-}
-
-void PublishTextMarker()
-{
-    int nNumWP = arWaypoint.size();
-    for(int i=0; i<nNumWP ; i++ )
-    {
-        float wp_x = arWaypoint[i].pose.position.x;
-        float wp_y = arWaypoint[i].pose.position.y;
-
-        std::string wp_name = arWaypoint[i].name;
-        DrawTextMarker(&marker_pub,wp_name,i,0.2,wp_x,wp_y,0.55,1.0,1.0,0.0);
-        ros::spinOnce();
-    }
-
-    int nNumCh = arCharger.size();
-    for(int i=0; i<nNumCh ; i++ )
-    {
-
-        float ch_x = arCharger[i].pose.position.x;
-        float ch_y = arCharger[i].pose.position.y;
-
-        std::string wp_name = arCharger[i].name;
-        DrawTextMarker(&marker_pub, wp_name,nNumWP+i,0.2,ch_x,ch_y,0.35,1.0,1.0,0.0);
-        ros::spinOnce();
-    }
-}
-
-// 移动航点的回调函数
-void processWaypointFeedback(const visualization_msgs::InteractiveMarkerFeedbackConstPtr &feedback )
-{
-    ROS_WARN("[%s] p(%.2f,%.2f,%.2f) r(%.2f,%.2f,%.2f,%.2f)",feedback->marker_name.c_str(),
-    feedback->pose.position.x,feedback->pose.position.y,feedback->pose.position.z,
-    feedback->pose.orientation.x,feedback->pose.orientation.y,feedback->pose.orientation.z,feedback->pose.orientation.w);
-
-    int nNumWP = arWaypoint.size();
-    for(int i=0; i<nNumWP ; i++ )
-    {
-        if(feedback->marker_name == arWaypoint[i].name)
-        {
-            arWaypoint[i].pose = feedback->pose;
-        }
-    }
-
-    std::ostringstream s;
-    std::ostringstream mouse_point_ss;
-    if( feedback->mouse_point_valid )
-    {
-        switch(feedback->event_type)
-        {
-            case visualization_msgs::InteractiveMarkerFeedback::BUTTON_CLICK:
-                //ROS_INFO("BUTTON_CLICK");
-                break;
-            case visualization_msgs::InteractiveMarkerFeedback::MOUSE_DOWN:
-                //ROS_INFO("MOUSE_DOWN");
-                break;
-            case visualization_msgs::InteractiveMarkerFeedback::MOUSE_UP:
-                //ROS_INFO("MOUSE_UP");
-                break;
-            case visualization_msgs::InteractiveMarkerFeedback::MENU_SELECT:
-                //ROS_INFO_STREAM( s.str() << ": menu item " << feedback->menu_entry_id << " clicked" << mouse_point_ss.str() << "." );
-                break;
-        }
-    }
-}
-
-// 移动充电桩的回调函数
-void processChargerFeedback(const visualization_msgs::InteractiveMarkerFeedbackConstPtr &feedback )
-{
-    ROS_WARN("[%s] p(%.2f,%.2f,%.2f) r(%.2f,%.2f,%.2f,%.2f)",feedback->marker_name.c_str(),
-    feedback->pose.position.x,feedback->pose.position.y,feedback->pose.position.z,
-    feedback->pose.orientation.x,feedback->pose.orientation.y,feedback->pose.orientation.z,feedback->pose.orientation.w);
-
-    int nNumChargers = arCharger.size();
-    for(int i=0; i<nNumChargers ; i++ )
-    {
-        if(feedback->marker_name == arCharger[i].name)
-        {
-            arCharger[i].pose = feedback->pose;
-        }
-    }
-
-    std::ostringstream s;
-    std::ostringstream mouse_point_ss;
-    if( feedback->mouse_point_valid )
-    {
-        switch(feedback->event_type)
-        {
-            case visualization_msgs::InteractiveMarkerFeedback::BUTTON_CLICK:
-                //ROS_INFO("BUTTON_CLICK");
-                break;
-            case visualization_msgs::InteractiveMarkerFeedback::MOUSE_DOWN:
-                //ROS_INFO("MOUSE_DOWN");
-                break;
-            case visualization_msgs::InteractiveMarkerFeedback::MOUSE_UP:
-                //ROS_INFO("MOUSE_UP");
-                break;
-            case visualization_msgs::InteractiveMarkerFeedback::MENU_SELECT:
-                //ROS_INFO_STREAM( s.str() << ": menu item " << feedback->menu_entry_id << " clicked" << mouse_point_ss.str() << "." );
-                break;
-        }
-    }
-}
-
-// 向服务器添加新的航点操作标记
-void NewWaypointInterMarker(InteractiveMarkerServer* inServer,string inName, geometry_msgs::Pose InPose)
-{
-    visualization_msgs::InteractiveMarker wp_itr_marker;
-    visualization_msgs::InteractiveMarkerControl wp_dis_ctrl;
-    visualization_msgs::Marker wp_dis_marker;
-    visualization_msgs::InteractiveMarkerControl move_control;
-    wp_itr_marker.header.stamp=ros::Time::now();
-    wp_itr_marker.name = inName;
-    wp_itr_marker.description = inName;
-    wp_itr_marker.pose = InPose;
-
-    // 显示外形
-    wp_itr_marker.header.frame_id = "map";
-    wp_itr_marker.header.stamp=ros::Time::now();
-
-    wp_dis_marker.ns = "marker_waypoints";
-    wp_dis_marker.action = visualization_msgs::Marker::ADD;
-    wp_dis_marker.type = visualization_msgs::Marker::MESH_RESOURCE;
-    wp_dis_marker.mesh_resource = "package://amr_waypoint_tools/meshes/waypoint.dae";
-    wp_dis_marker.scale.x = 1;
-    wp_dis_marker.scale.y = 1;
-    wp_dis_marker.scale.z = 1;
-    wp_dis_marker.color.r = 1.0;
-    wp_dis_marker.color.g = 0.0;
-    wp_dis_marker.color.b = 1.0;
-    wp_dis_marker.color.a = 1.0;
-
-    wp_dis_ctrl.markers.push_back( wp_dis_marker );
-    wp_dis_ctrl.always_visible = true;
-    wp_itr_marker.controls.push_back( wp_dis_ctrl );
-
-    // 操作设置
-    move_control.name = "move_x";
-    move_control.orientation.w = 1.0;
-	move_control.orientation.x = 1.0;
-	move_control.orientation.y = 0.0;
-	move_control.orientation.z = 0.0;
-    move_control.interaction_mode = visualization_msgs::InteractiveMarkerControl::MOVE_AXIS;
-    wp_itr_marker.controls.push_back(move_control);
-    move_control.name = "move_z";
-	move_control.orientation.x = 0.0;
-	move_control.orientation.z = 1.0;
-    wp_itr_marker.controls.push_back(move_control);
-    move_control.name = "rotate_z";
-	move_control.orientation.x = 0.0;
-	move_control.orientation.y = 1.0;
-	move_control.orientation.z = 0.0;
-    move_control.interaction_mode = visualization_msgs::InteractiveMarkerControl::ROTATE_AXIS;
-    wp_itr_marker.controls.push_back(move_control);
-
-    // 加入菜单
-    visualization_msgs::Marker menu_marker;
-    menu_marker.type = visualization_msgs::Marker::CUBE;
-    menu_marker.scale.x = 0.5;
-    menu_marker.scale.y = 0.5;
-    menu_marker.scale.z = 0.5;
-    menu_marker.color.r = 0.9;
-    menu_marker.color.g = 0.9;
-    menu_marker.color.b = 0.9;
-    menu_marker.color.a = 0.0;  //全透明
-    InteractiveMarkerControl menu_control;
-    menu_control.interaction_mode = InteractiveMarkerControl::BUTTON;
-    menu_control.always_visible = true;
-    menu_control.markers.push_back( menu_marker );
-    wp_itr_marker.controls.push_back( menu_control );
-
-    inServer->insert(wp_itr_marker, &processWaypointFeedback);
-}
-
-// 向服务器添加新的充电桩操作标记
-void NewChargerInterMarker(InteractiveMarkerServer* inServer,string inName, geometry_msgs::Pose InPose)
-{
-    visualization_msgs::InteractiveMarker wp_itr_marker;
-    visualization_msgs::InteractiveMarkerControl wp_dis_ctrl;
-    visualization_msgs::Marker wp_dis_marker;
-    visualization_msgs::InteractiveMarkerControl move_control;
-    wp_itr_marker.header.stamp=ros::Time::now();
-    wp_itr_marker.name = inName;
-    wp_itr_marker.description = inName;
-    wp_itr_marker.pose = InPose;
-
-    // 显示外形
-    wp_itr_marker.header.frame_id = "map";
-    wp_itr_marker.header.stamp=ros::Time::now();
-
-    wp_dis_marker.ns = "marker_chargers";
-    wp_dis_marker.action = visualization_msgs::Marker::ADD;
-    wp_dis_marker.type = visualization_msgs::Marker::MESH_RESOURCE;
-    wp_dis_marker.mesh_resource = "package://amr_waypoint_tools/meshes/charger.dae";
-    wp_dis_marker.scale.x = 1;
-    wp_dis_marker.scale.y = 1;
-    wp_dis_marker.scale.z = 1;
-    wp_dis_marker.color.r = 0.0;
-    wp_dis_marker.color.g = 0.0;
-    wp_dis_marker.color.b = 1.0;
-    wp_dis_marker.color.a = 1.0;
-
-    wp_dis_ctrl.markers.push_back( wp_dis_marker );
-    wp_dis_ctrl.always_visible = true;
-    wp_itr_marker.controls.push_back( wp_dis_ctrl );
-
-    // 操作设置
-    move_control.name = "move_x";
-    move_control.orientation.w = 1.0;
-	move_control.orientation.x = 1.0;
-	move_control.orientation.y = 0.0;
-	move_control.orientation.z = 0.0;
-    move_control.interaction_mode = visualization_msgs::InteractiveMarkerControl::MOVE_AXIS;
-    wp_itr_marker.controls.push_back(move_control);
-    move_control.name = "move_z";
-	move_control.orientation.x = 0.0;
-	move_control.orientation.z = 1.0;
-    wp_itr_marker.controls.push_back(move_control);
-    move_control.name = "rotate_z";
-	move_control.orientation.x = 0.0;
-	move_control.orientation.y = 1.0;
-	move_control.orientation.z = 0.0;
-    move_control.interaction_mode = visualization_msgs::InteractiveMarkerControl::ROTATE_AXIS;
-    wp_itr_marker.controls.push_back(move_control);
-
-    // 加入菜单
-    visualization_msgs::Marker menu_marker;
-    menu_marker.type = visualization_msgs::Marker::CUBE;
-    menu_marker.scale.x = 0.5;
-    menu_marker.scale.y = 0.5;
-    menu_marker.scale.z = 0.5;
-    menu_marker.color.r = 0.9;
-    menu_marker.color.g = 0.9;
-    menu_marker.color.b = 0.9;
-    menu_marker.color.a = 0.0;  //全透明
-    InteractiveMarkerControl menu_control;
-    menu_control.interaction_mode = InteractiveMarkerControl::BUTTON;
-    menu_control.always_visible = true;
-    menu_control.markers.push_back( menu_marker );
-    wp_itr_marker.controls.push_back( menu_control );
-
-    inServer->insert(wp_itr_marker, &processChargerFeedback);
-}
-
-// 菜单删除航点的回调函数
-void DeleteWaypointCallback( const visualization_msgs::InteractiveMarkerFeedbackConstPtr &feedback )
-{
-  strDelWaypointName = feedback->marker_name;
-  bDeleteWaypoint = true;
-  ROS_WARN("Menu - Delete waypoint %s",strDelWaypointName.c_str());
-}
-
-// 菜单删除充电桩的回调函数
-void DeleteChargerCallback( const visualization_msgs::InteractiveMarkerFeedbackConstPtr &feedback )
-{
-  strDelChargerName = feedback->marker_name;
-  bDeleteCharger = true;
-  ROS_WARN("Menu - Delete charger %s",strDelChargerName.c_str());
-}
-
-// 添加新航点回调函数
 void AddWayPointCallback(const amr_waypoint_tools::Waypoint::ConstPtr& wp)
 {
     ROS_INFO("Add_waypoint: %s (%.2f %.2f) (%.2f %.2f %.2f %.2f) ",wp->name.c_str(), wp->pose.position.x, wp->pose.position.y, wp->pose.orientation.x, wp->pose.orientation.y, wp->pose.orientation.z, wp->pose.orientation.w);
     amr_waypoint_tools::Waypoint newWayPoint;
     newWayPoint = *wp;
-    int nWPNum = arWaypoint.size();
-    for(int i= 0;i<nWPNum;i++)
-    {
-        if(newWayPoint.name == arWaypoint[i].name)
-        {
-            newWayPoint.name = newWayPoint.name + "_1";
-        }
-    }
     arWaypoint.push_back(newWayPoint);
-    if(pWaypointServer != NULL)
-    {
-        NewWaypointInterMarker( pWaypointServer, newWayPoint.name, newWayPoint.pose );
-        pMenuWaypoint->apply( *pWaypointServer, newWayPoint.name );
-        //通知client（RVIZ）更新显示
-        pWaypointServer->applyChanges();
-    }
 }
 
-// 添加新充电桩回调函数
 void AddChargerCallback(const amr_waypoint_tools::Waypoint::ConstPtr& wp)
 {
     ROS_INFO("Add_charger: %s (%.2f %.2f) (%.2f %.2f %.2f %.2f) ",wp->name.c_str(), wp->pose.position.x, wp->pose.position.y, wp->pose.orientation.x, wp->pose.orientation.y, wp->pose.orientation.z, wp->pose.orientation.w);
     amr_waypoint_tools::Waypoint newCharger;
     newCharger = *wp;
-    int nChargerNum = arCharger.size();
-    for(int i= 0;i<nChargerNum;i++)
-    {
-        if(newCharger.name == arCharger[i].name)
-        {
-            newCharger.name = newCharger.name + "_1";
-        }
-    }
     arCharger.push_back(newCharger);
-    if(pWaypointServer != NULL)
-    {
-        NewChargerInterMarker( pWaypointServer, newCharger.name, newCharger.pose );
-        pMenuCharger->apply( *pWaypointServer, newCharger.name );
-        //通知client（RVIZ）更新显示
-        pWaypointServer->applyChanges();
-    }
 }
 
 int main(int argc, char** argv)
 {
-    ros::init(argc, argv, "wp_edit_node");
+    ros::init(argc, argv, "waypoint_manager");
 
     std::string strLoadFile;
     char const* home = getenv("HOME");
@@ -649,88 +439,28 @@ int main(int argc, char** argv)
         ROS_WARN("strLoadFile is empty. Failed to load waypoints!");
     }
 
+
     ros::NodeHandle nh;
-
-    //创建服务
-    interactive_markers::InteractiveMarkerServer wp_server("waypoints_move");
-    pWaypointServer = &wp_server;
-
-    marker_pub = nh.advertise<visualization_msgs::Marker>("text_marker", 100);
+    marker_pub = nh.advertise<visualization_msgs::Marker>("waypoints_marker", 100);
+    charger_pub = nh.advertise<visualization_msgs::Marker>("chargers_marker", 100);
+    Init_Marker();
     ros::Subscriber add_waypoint_sub = nh.subscribe("waypoint/add_waypoint",10,&AddWayPointCallback);
     ros::Subscriber add_charger_sub = nh.subscribe("waypoint/add_charger",10,&AddChargerCallback);
+
     ros::ServiceServer srvGetNum = nh.advertiseService("waypoint/get_num_waypoint", getNumOfWaypoints);
     ros::ServiceServer srvGetWPIndex = nh.advertiseService("waypoint/get_waypoint_index", getWaypointByIndex);
     ros::ServiceServer srvGetWPName = nh.advertiseService("waypoint/get_waypoint_name", getWaypointByName);
     ros::ServiceServer srvSaveWP = nh.advertiseService("waypoint/save_waypoints", saveWaypoints);
+
+    ros::ServiceServer srvGetChargerNum = nh.advertiseService("waypoint/get_num_charger", getNumOfChargers);
+    ros::ServiceServer srvGetChargerIndex = nh.advertiseService("waypoint/get_charger_index", getChargerByIndex);
     ros::ServiceServer srvGetChargerName = nh.advertiseService("waypoint/get_charger_name", getChargerByName);
-
-    //将互动标记放到标记集合里，同时指定Feedback回调函数
-    int nWPNum = arWaypoint.size();
-    ROS_INFO("Num of waypoints = %d",nWPNum);
-    for(int i=0; i< nWPNum; i++)
-    {
-        NewWaypointInterMarker( &wp_server, arWaypoint[i].name, arWaypoint[i].pose );
-    }
-    MenuHandler menu_waypoint;
-    menu_waypoint.insert( "Delete", &DeleteWaypointCallback);
-    pMenuWaypoint = &menu_waypoint;
-    for(int i=0; i< nWPNum; i++)
-    {
-        menu_waypoint.apply( wp_server, arWaypoint[i].name );
-    }
-    // 充电桩标记初始化
-    int nChargerNum = arCharger.size();
-    ROS_INFO("Num of chargers = %d",nChargerNum);
-    for(int i=0; i< nChargerNum; i++)
-    {
-        NewChargerInterMarker( &wp_server, arCharger[i].name, arCharger[i].pose );
-    }
-    MenuHandler menu_charger;
-    menu_charger.insert( "Delete", &DeleteChargerCallback);
-    pMenuCharger = &menu_charger;
-    for(int i=0; i< nChargerNum; i++)
-    {
-        menu_charger.apply( wp_server, arCharger[i].name );
-    }
-
-    //通知client（RVIZ）更新显示
-    wp_server.applyChanges();
 
     ros::Rate r(10);
 
     while(ros::ok())
     {
-        if(bDeleteWaypoint == true)
-        {
-            bDeleteWaypoint = false;
-            wp_server.erase(strDelWaypointName);
-            wp_server.applyChanges();
-            for(vector<amr_waypoint_tools::Waypoint>::iterator iter=arWaypoint.begin(); iter!=arWaypoint.end(); )
-            {
-                if( (*iter).name == strDelWaypointName)
-                    iter = arWaypoint.erase(iter);
-                else
-                    iter ++ ;
-            }
-            ROS_WARN("%s waypoint deleted!",strDelWaypointName.c_str());
-            RemoveTextMarker();
-        }
-        if(bDeleteCharger == true)
-        {
-            bDeleteCharger = false;
-            wp_server.erase(strDelChargerName);
-            wp_server.applyChanges();
-            for(vector<amr_waypoint_tools::Waypoint>::iterator iter=arCharger.begin(); iter!=arCharger.end(); )
-            {
-                if( (*iter).name == strDelChargerName)
-                    iter = arCharger.erase(iter);
-                else
-                    iter ++ ;
-            }
-            ROS_WARN("%s charger deleted!",strDelChargerName.c_str());
-            RemoveTextMarker();
-        }
-        PublishTextMarker();
+        PublishWaypointsMarker();
         ros::spinOnce();
         r.sleep();
     }

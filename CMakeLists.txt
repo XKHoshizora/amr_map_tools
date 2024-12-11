@@ -81,74 +81,74 @@ install(TARGETS
 )
 
 install(FILES
-    amr_waypoint_tools_plugin.xml
+    waypoint_tools_plugin.xml
     DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
 
-add_executable(amr_wp_manager
-    src/wp_manager.cpp
+add_executable(waypoint_manager
+    src/waypoint_manager.cpp
 )
-add_dependencies(amr_wp_manager ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-target_link_libraries(amr_wp_manager
+add_dependencies(waypoint_manager ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+target_link_libraries(waypoint_manager
     ${catkin_LIBRARIES} ${TinyXML_LIBRARIES}
 )
 
-add_executable(amr_wp_edit_node
-    src/wp_edit_node.cpp
+add_executable(waypoint_editor
+    src/waypoint_editor.cpp
 )
-add_dependencies(amr_wp_edit_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-target_link_libraries(amr_wp_edit_node
+add_dependencies(waypoint_editor ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+target_link_libraries(waypoint_editor
     ${catkin_LIBRARIES} ${TinyXML_LIBRARIES}
 )
 
-add_executable(amr_wp_nav_test
-    src/wp_nav_test.cpp
+add_executable(waypoint_navi_test
+    src/waypoint_navi_test.cpp
 )
-add_dependencies(amr_wp_nav_test ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-target_link_libraries(amr_wp_nav_test
+add_dependencies(waypoint_navi_test ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+target_link_libraries(waypoint_navi_test
     ${catkin_LIBRARIES}
 )
 
-add_executable(amr_wp_saver
-    src/wp_saver.cpp
+add_executable(waypoint_saver
+    src/waypoint_saver.cpp
 )
-add_dependencies(amr_wp_saver ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-target_link_libraries(amr_wp_saver
+add_dependencies(waypoint_saver ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+target_link_libraries(waypoint_saver
     ${catkin_LIBRARIES}
 )
 
-add_executable(amr_wp_nav_remote
-    src/wp_nav_remote.cpp
+add_executable(waypoint_navi_remote
+    src/waypoint_navi_remote.cpp
     src/network/UDPServer.c
 )
-add_dependencies(amr_wp_nav_remote ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-target_link_libraries(amr_wp_nav_remote
+add_dependencies(waypoint_navi_remote ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+target_link_libraries(waypoint_navi_remote
     ${catkin_LIBRARIES}
     pthread
 )
 
-add_executable(amr_wp_nav_odom_report
-    src/wp_nav_odom_report.cpp
+add_executable(waypoint_navi_odom_report
+    src/waypoint_navi_odom_report.cpp
     src/network/UDPClient.c
 )
-add_dependencies(amr_wp_nav_odom_report ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-target_link_libraries(amr_wp_nav_odom_report
+add_dependencies(waypoint_navi_odom_report ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+target_link_libraries(waypoint_navi_odom_report
     ${catkin_LIBRARIES}
     pthread
 )
 
-add_executable(amr_charger_get_position
-    src/charger_get_position.cpp
+add_executable(get_charger_position
+    src/get_charger_position.cpp
 )
-add_dependencies(amr_charger_get_position ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-target_link_libraries(amr_charger_get_position
+add_dependencies(get_charger_position ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+target_link_libraries(get_charger_position
     ${catkin_LIBRARIES}
 )
 
-add_executable(amr_wp_navi_server
-    src/wp_navi_server.cpp
+add_executable(waypoint_navi_server
+    src/waypoint_navi_server.cpp
 )
-add_dependencies(amr_wp_navi_server ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-target_link_libraries(amr_wp_navi_server
+add_dependencies(waypoint_navi_server ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+target_link_libraries(waypoint_navi_server
     ${catkin_LIBRARIES}
 )
 
